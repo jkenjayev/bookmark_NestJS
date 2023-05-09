@@ -5,19 +5,24 @@ import { User } from '@prisma/client';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {
-  }
+  constructor(
+    private prisma: PrismaService,
+  ) {}
 
-  async editUser(userId: number, dto: EditUserDto): Promise<User> {
-    const user: User = await this.prisma.user.update({
-      where: {
-        id: userId,
-      },
+  async editUser(
+    userId: number,
+    dto: EditUserDto,
+  ): Promise<User> {
+    const user: User =
+      await this.prisma.user.update({
+        where: {
+          id: userId,
+        },
 
-      data: {
-        ...dto,
-      },
-    });
+        data: {
+          ...dto,
+        },
+      });
     console.log(userId, dto);
     delete user.hash;
     return user;

@@ -5,8 +5,6 @@ import { EditUserDto } from './dto';
 
 @Module({
   controllers: [UserController],
-  providers: [UserService, EditUserDto]
+  providers: [UserService, EditUserDto],
 })
-export class UserModule {
-
-}
+export class UserModule {}

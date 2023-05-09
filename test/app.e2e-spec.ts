@@ -1,29 +1,44 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import {
+  Test,
+  TestingModule,
+} from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import {
+  INestApplication,
+  ValidationPipe,
+} from '@nestjs/common';
 import { PrismaService } from '../src/prisma/prisma.service';
 import * as pactum from 'pactum';
 import { AuthDto } from '../src/auth/dto';
 import { EditUserDto } from '../src/user/dto';
-import { CreateBookmarkDto, EditBookmarkDto } from '../src/bookmarks/dto';
+import {
+  CreateBookmarkDto,
+  EditBookmarkDto,
+} from '../src/bookmarks/dto';
 
 describe('Bookmark Project', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   beforeAll(async () => {
-    const moduleRef: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
+    const moduleRef: TestingModule =
+      await Test.createTestingModule({
+        imports: [AppModule],
+      }).compile();
 
-    app = moduleRef.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({
-      whitelist: true,
-    }));
+    app =
+      moduleRef.createNestApplication();
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+      }),
+    );
     prisma = app.get(PrismaService);
     await app.init();
     await app.listen(3000);
     await prisma.cleanDB();
-    pactum.request.setBaseUrl('http://localhost:3000');
+    pactum.request.setBaseUrl(
+      'http://localhost:3000',
+    );
   });
 
   afterAll(() => {
@@ -116,10 +131,12 @@ describe('Bookmark Project', () => {
           .post('/auth/signin')
           .withBody(dto)
           .expectStatus(200)
-          .stores('UserAT', 'access_token');
+          .stores(
+            'UserAT',
+            'access_token',
+          );
       });
     });
-
   });
 
   describe('User', () => {
@@ -176,7 +193,8 @@ describe('Bookmark Project', () => {
           .spec()
           .get('/bookmarks')
           .withHeaders({
-            Authorization: 'Bearer $S{UserAT}',
+            Authorization:
+              'Bearer $S{UserAT}',
           })
           .expectStatus(200);
       });
@@ -187,9 +205,13 @@ describe('Bookmark Project', () => {
         return pactum
           .spec()
           .get(`/bookmarks/{id}`)
-          .withPathParams('id', '$S{bookmarkId}')
+          .withPathParams(
+            'id',
+            '$S{bookmarkId}',
+          )
           .withHeaders({
-            Authorization: 'Bearer $S{UserAT}',
+            Authorization:
+              'Bearer $S{UserAT}',
           })
           .expectStatus(200);
       });
@@ -197,33 +219,41 @@ describe('Bookmark Project', () => {
 
     describe('Update bookmark by id', () => {
       const dto: EditBookmarkDto = {
-        description: "this is the test................."
+        description:
+          'this is the test.................',
       };
       it('should update the bookmark by its id', () => {
         return pactum
           .spec()
           .patch(`/bookmarks/{id}`)
-          .withPathParams('id', '$S{bookmarkId}')
+          .withPathParams(
+            'id',
+            '$S{bookmarkId}',
+          )
           .withHeaders({
-            Authorization: 'Bearer $S{UserAT}',
+            Authorization:
+              'Bearer $S{UserAT}',
           })
           .withBody(dto)
-          .expectStatus(200)
+          .expectStatus(200);
       });
     });
 
-    describe("Delete bookmark by id", () => {
-      it("Should delete bookmark by id", () => {
+    describe('Delete bookmark by id', () => {
+      it('Should delete bookmark by id', () => {
         return pactum
           .spec()
           .delete('/bookmarks/{id}')
-          .withPathParams("id", `$S{bookmarkId}`)
+          .withPathParams(
+            'id',
+            `$S{bookmarkId}`,
+          )
           .withHeaders({
-            Authorization: `Bearer $S{UserAT}`
+            Authorization: `Bearer $S{UserAT}`,
           })
           .expectStatus(200)
-          .inspect()
-      })
-    })
+          .inspect();
+      });
+    });
   });
 });
