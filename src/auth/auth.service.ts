@@ -7,6 +7,7 @@ import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
+import { User } from '@prisma/client';
 @Injectable()
 export class AuthService {
   constructor(
@@ -17,12 +18,12 @@ export class AuthService {
 
   async signup(dto: AuthDto) {
     // generate password hash
-    const hash = await argon.hash(
+    const hash: string = await argon.hash(
       dto.password,
     );
     try {
       // save the new user into the db
-      const user =
+      const user: User =
         await this.prisma.user.create({
           data: {
             email: dto.email,
@@ -38,7 +39,7 @@ export class AuthService {
     } catch (err) {
       if (err.code === 'P2002') {
         throw new ForbiddenException(
-          'Crediantials taken',
+          'Credentials taken',
         );
       }
 
@@ -48,7 +49,7 @@ export class AuthService {
 
   async signin(dto: AuthDto) {
     // find the user by email
-    const user =
+    const user: User =
       await this.prisma.user.findFirst({
         where: {
           email: dto.email,
@@ -63,7 +64,7 @@ export class AuthService {
     }
 
     // verify the user is valid password
-    const isMatchPwd =
+    const isMatchPwd: boolean =
       await argon.verify(
         user.hash,
         dto.password,
